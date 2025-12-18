@@ -11,7 +11,19 @@ const DEFAULT_SETTINGS: Partial<AiTaggerSettings> = {
 	model: 'gpt-4o-mini',
 	lowerCaseMode: false,
 	autoTagOnIdle: false,
-	idleTimeoutMinutes: 2
+	idleTimeoutMinutes: 2,
+	taggedContentHashes: {}
+}
+
+// Simple hash function for content comparison
+function simpleHash(str: string): string {
+	let hash = 0;
+	for (let i = 0; i < str.length; i++) {
+		const char = str.charCodeAt(i);
+		hash = ((hash << 5) - hash) + char;
+		hash = hash & hash; // Convert to 32bit integer
+	}
+	return hash.toString(16);
 }
 
 export default class AiTagger extends Plugin {
@@ -160,20 +172,47 @@ export default class AiTagger extends Plugin {
 			return;
 		}
 
-		// Check if file has no tags
-		const fileCache = this.app.metadataCache.getFileCache(currentFile);
-		const existingTags = parseFrontMatterTags(fileCache?.frontmatter) || [];
-
-		if (existingTags.length > 0) {
-			// File already has tags, skip auto-tagging
-			return;
-		}
-
 		try {
+			const fileContents = await this.app.vault.read(currentFile);
+
+			// Extract content without frontmatter for hash comparison
+			// This ensures tag changes don't affect the hash
+			const { contentStart }: FrontMatterInfo = getFrontMatterInfo(fileContents);
+			const contentWithoutFrontmatter = fileContents.substring(contentStart);
+
+			// Calculate hash of current content
+			const currentHash = simpleHash(contentWithoutFrontmatter);
+
+			// Initialize taggedContentHashes if it doesn't exist
+			if (!this.settings.taggedContentHashes) {
+				this.settings.taggedContentHashes = {};
+			}
+
+			// Check if content has changed since last tagging
+			const storedHash = this.settings.taggedContentHashes[currentFile.path];
+
+			if (storedHash === currentHash) {
+				// Content hasn't changed since last tagging, skip
+				console.debug('Auto-tag skipped: content unchanged for', currentFile.path);
+				return;
+			}
+
 			this.isAutoTagging = true;
 			new Notice('Auto-generating tags for idle file...');
-			const fileContents = await this.app.vault.read(currentFile);
-			await this.tagText(currentFile, fileContents);
+
+			// Clear existing tags before regenerating (since content changed)
+			await this.app.fileManager.processFrontMatter(currentFile, frontmatter => {
+				frontmatter["tags"] = [];
+			});
+
+			// Re-read file contents after clearing tags
+			const updatedFileContents = await this.app.vault.read(currentFile);
+			await this.tagText(currentFile, updatedFileContents);
+
+			// Store the content hash after successful tagging
+			this.settings.taggedContentHashes[currentFile.path] = currentHash;
+			await this.saveData(this.settings);
+
 			new Notice('Auto-tagging complete!');
 		} catch (error) {
 			console.error('Error during auto-tagging:', error);

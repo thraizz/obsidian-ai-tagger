@@ -24,5 +24,8 @@ export interface AiTaggerSettings {
 	lowerCaseMode: boolean;
 	autoTagOnIdle: boolean;
 	idleTimeoutMinutes: number;
+	// Stores content hashes for files that have been auto-tagged
+	// Key: file path, Value: hash of content when last tagged
+	taggedContentHashes: Record<string, string>;
 	[key: `${string}ApiKey`]: string;
 }
