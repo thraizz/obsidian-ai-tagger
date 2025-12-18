@@ -3,10 +3,20 @@
 // while the plugin is enabled you can access these settings from the settings member variable
 export interface AiTaggerSettings {
 	openaiApiKey: string;
-	mistralaiApiKey: string;
 	anthropicApiKey: string;
+	fireworksApiKey: string;
+	deepinfraApiKey: string;
+	googleApiKey: string;
+	mistralApiKey: string;
+	cohereApiKey: string;
+	perplexityApiKey: string;
+	openchatApiKey: string;
+	deepseekApiKey: string;
 	groqApiKey: string;
-	googlegenaiApiKey: string;
+	cloudflareApiKey: string;
+	lynnApiKey: string;
+	replicateApiKey: string;
+	awsApiKey: string;
 	ollamaApiKey: string;
 	model: string;
 	useCustomBaseUrl: boolean;
