@@ -22,5 +22,7 @@ export interface AiTaggerSettings {
 	useCustomBaseUrl: boolean;
 	customBaseUrl: string;
 	lowerCaseMode: boolean;
+	autoTagOnIdle: boolean;
+	idleTimeoutMinutes: number;
 	[key: `${string}ApiKey`]: string;
 }

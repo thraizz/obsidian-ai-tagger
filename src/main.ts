@@ -9,12 +9,17 @@ import * as dotenv from 'dotenv';
 
 const DEFAULT_SETTINGS: Partial<AiTaggerSettings> = {
 	model: 'gpt-4o-mini',
-	lowerCaseMode: false
+	lowerCaseMode: false,
+	autoTagOnIdle: false,
+	idleTimeoutMinutes: 2
 }
 
 export default class AiTagger extends Plugin {
 	settings: AiTaggerSettings;
 	llm: LLM | null = null;
+	private idleTimer: ReturnType<typeof setTimeout> | null = null;
+	private isAutoTagging: boolean = false;
+	private activityHandler: () => void;
 
 	async initializeLlm() {
 		// Get model configuration
@@ -126,6 +131,101 @@ export default class AiTagger extends Plugin {
 		}
 	}
 
+	private resetIdleTimer() {
+		if (this.idleTimer) {
+			clearTimeout(this.idleTimer);
+			this.idleTimer = null;
+		}
+
+		if (!this.settings.autoTagOnIdle) {
+			return;
+		}
+
+		const timeoutMs = (this.settings.idleTimeoutMinutes || 2) * 60 * 1000;
+		this.idleTimer = setTimeout(() => this.onIdle(), timeoutMs);
+	}
+
+	private async onIdle() {
+		if (!this.settings.autoTagOnIdle || this.isAutoTagging) {
+			return;
+		}
+
+		const currentFile = this.app.workspace.getActiveFile();
+		if (!currentFile || !(currentFile instanceof TFile)) {
+			return;
+		}
+
+		// Check if file is a markdown file
+		if (!currentFile.path.endsWith('.md')) {
+			return;
+		}
+
+		// Check if file has no tags
+		const fileCache = this.app.metadataCache.getFileCache(currentFile);
+		const existingTags = parseFrontMatterTags(fileCache?.frontmatter) || [];
+
+		if (existingTags.length > 0) {
+			// File already has tags, skip auto-tagging
+			return;
+		}
+
+		try {
+			this.isAutoTagging = true;
+			new Notice('Auto-generating tags for idle file...');
+			const fileContents = await this.app.vault.read(currentFile);
+			await this.tagText(currentFile, fileContents);
+			new Notice('Auto-tagging complete!');
+		} catch (error) {
+			console.error('Error during auto-tagging:', error);
+			new Notice('Auto-tagging failed: ' + error.message);
+		} finally {
+			this.isAutoTagging = false;
+			// Reset timer for next idle period
+			this.resetIdleTimer();
+		}
+	}
+
+	private setupIdleDetection() {
+		// Create the activity handler
+		this.activityHandler = () => this.resetIdleTimer();
+
+		// Listen to various user activity events on the document
+		const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
+		events.forEach(event => {
+			document.addEventListener(event, this.activityHandler, { passive: true });
+		});
+
+		// Also listen to Obsidian-specific events
+		this.registerEvent(
+			this.app.workspace.on('active-leaf-change', () => this.resetIdleTimer())
+		);
+
+		this.registerEvent(
+			this.app.workspace.on('file-open', () => this.resetIdleTimer())
+		);
+
+		this.registerEvent(
+			this.app.vault.on('modify', () => this.resetIdleTimer())
+		);
+
+		// Start the initial idle timer
+		this.resetIdleTimer();
+	}
+
+	private cleanupIdleDetection() {
+		if (this.idleTimer) {
+			clearTimeout(this.idleTimer);
+			this.idleTimer = null;
+		}
+
+		if (this.activityHandler) {
+			const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
+			events.forEach(event => {
+				document.removeEventListener(event, this.activityHandler);
+			});
+		}
+	}
+
 	async onload() {
 		// load settings on plugin load
 		await this.loadSettings();
@@ -142,6 +242,9 @@ export default class AiTagger extends Plugin {
 			console.error('Error initializing LLM:', error);
 			new Notice('Failed to initialize LLM. Please check your settings and API keys.');
 		}
+
+		// Setup idle detection for auto-tagging
+		this.setupIdleDetection();
 
 		// This creates an icon in the left ribbon.
 		this.addRibbonIcon('wand-2', 'Generate tags!', async () => {
@@ -224,6 +327,6 @@ export default class AiTagger extends Plugin {
 	}
 
 	onunload() {
-
+		this.cleanupIdleDetection();
 	}
 }

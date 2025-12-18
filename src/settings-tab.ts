@@ -93,5 +93,33 @@ export class AiTaggerSettingTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     }),
             );
+
+        // Auto-tag on idle settings
+        new Setting(containerElement)
+            .setName('Auto-tag on Idle')
+            .setDesc('Automatically generate tags for the current file when Obsidian is idle and the file has no tags.')
+            .addToggle((toggle) =>
+                toggle.setValue(this.plugin.settings.autoTagOnIdle)
+                    .onChange(async (value) => {
+                        this.plugin.settings.autoTagOnIdle = value;
+                        await this.plugin.saveSettings();
+                    }),
+            );
+
+        new Setting(containerElement)
+            .setName('Idle Timeout (minutes)')
+            .setDesc('How long Obsidian must be idle before auto-tagging triggers (default: 2 minutes).')
+            .addText((text) =>
+                text
+                    .setPlaceholder('2')
+                    .setValue(String(this.plugin.settings.idleTimeoutMinutes || 2))
+                    .onChange(async (value) => {
+                        const numValue = parseInt(value, 10);
+                        if (!isNaN(numValue) && numValue > 0) {
+                            this.plugin.settings.idleTimeoutMinutes = numValue;
+                            await this.plugin.saveSettings();
+                        }
+                    }),
+            );
     }
 }
