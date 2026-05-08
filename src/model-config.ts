@@ -134,36 +134,36 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     {
         company: "GOOGLE_GEN_AI",
         provider: "google-genai",
+        modelName: "Gemini 2.5 Pro",
+        modelId: "gemini-2.5-pro",
+        tokenLimit: 2_097_152,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "GOOGLE_GEN_AI",
+        provider: "google-genai",
+        modelName: "Gemini 2.5 Flash",
+        modelId: "gemini-2.5-flash",
+        tokenLimit: 1_048_576,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "GOOGLE_GEN_AI",
+        provider: "google-genai",
         modelName: "Gemini 2.0 Flash",
-        modelId: "gemini-2.0-flash-exp",
-        tokenLimit: 2_000_000,
+        modelId: "gemini-2.0-flash",
+        tokenLimit: 1_048_576,
         type: "CLOSED_SOURCE",
         toolUse: true
     },
     {
         company: "GOOGLE_GEN_AI",
         provider: "google-genai",
-        modelName: "Gemini 1.5 Flash",
-        modelId: "gemini-1.5-flash",
-        tokenLimit: 1000000,
-        type: "CLOSED_SOURCE",
-        toolUse: true
-    },
-    {
-        company: "GOOGLE_GEN_AI",
-        provider: "google-genai",
-        modelName: "Gemini 1.5 Flash-8B",
-        modelId: "gemini-1.5-flash-8b",
-        tokenLimit: 1000000,
-        type: "CLOSED_SOURCE",
-        toolUse: true
-    },
-    {
-        company: "GOOGLE_GEN_AI",
-        provider: "google-genai",
-        modelName: "Gemini 1.5 Pro",
-        modelId: "gemini-1.5-pro",
-        tokenLimit: 1000000,
+        modelName: "Gemini 2.0 Flash-Lite",
+        modelId: "gemini-2.0-flash-lite",
+        tokenLimit: 1_048_576,
         type: "CLOSED_SOURCE",
         toolUse: true
     },
