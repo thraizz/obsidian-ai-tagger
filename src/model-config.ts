@@ -26,90 +26,99 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     {
         company: "OPENAI",
         provider: "openai",
-        modelName: "GPT-4o mini",
-        modelId: "gpt-4o-mini",
-        tokenLimit: 128000,
+        modelName: "GPT-4.1",
+        modelId: "gpt-4.1",
+        tokenLimit: 1_000_000,
         type: "CLOSED_SOURCE",
         toolUse: true
     },
     {
         company: "OPENAI",
         provider: "openai",
-        modelName: "GPT-4o",
-        modelId: "gpt-4o",
-        tokenLimit: 128000,
+        modelName: "GPT-4.1 mini",
+        modelId: "gpt-4.1-mini",
+        tokenLimit: 1_000_000,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "OPENAI",
+        provider: "openai",
+        modelName: "GPT-4.1 nano",
+        modelId: "gpt-4.1-nano",
+        tokenLimit: 1_000_000,
         type: "CLOSED_SOURCE",
         toolUse: true
     },
     {
         company: "MISTRAL_AI",
         provider: "mistralai",
-        modelName: "Mistral Small",
+        modelName: "Mistral Small 4",
         modelId: "mistral-small-latest",
-        tokenLimit: 32768,
+        tokenLimit: 128000,
         type: "CLOSED_SOURCE",
         toolUse: true
     },
     {
         company: "MISTRAL_AI",
         provider: "mistralai",
-        modelName: "Mistral Large",
+        modelName: "Mistral Large 3",
         modelId: "mistral-large-latest",
-        tokenLimit: 128000,
+        tokenLimit: 256000,
         type: "CLOSED_SOURCE",
         toolUse: true
     },
     {
         company: "MISTRAL_AI",
         provider: "mistralai",
-        modelName: "Mistral Nemo",
-        modelId: "open-mistral-nemo",
+        modelName: "Magistral Medium",
+        modelId: "magistral-medium-2506",
+        tokenLimit: 128000,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "ANTHROPIC",
+        provider: "anthropic",
+        modelName: "Claude Haiku 4.5",
+        modelId: "claude-haiku-4-5-20251001",
+        tokenLimit: 200000,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "ANTHROPIC",
+        provider: "anthropic",
+        modelName: "Claude Sonnet 4.6",
+        modelId: "claude-sonnet-4-6",
+        tokenLimit: 200000,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "ANTHROPIC",
+        provider: "anthropic",
+        modelName: "Claude Opus 4.7",
+        modelId: "claude-opus-4-7",
+        tokenLimit: 1_000_000,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "GROQ",
+        provider: "groq",
+        modelName: "Llama 4 Scout",
+        modelId: "llama-4-scout-17b-16e-instruct",
         tokenLimit: 128000,
         type: "OPEN_SOURCE",
         toolUse: true
     },
     {
-        company: "ANTHROPIC",
-        provider: "anthropic",
-        modelName: "Claude 3.5 Haiku",
-        modelId: "claude-3-5-haiku-latest",
-        tokenLimit: 200000,
-        type: "CLOSED_SOURCE",
-        toolUse: true
-    },
-    {
-        company: "ANTHROPIC",
-        provider: "anthropic",
-        modelName: "Claude 3.5 Sonnet",
-        modelId: "claude-3-5-sonnet-latest",
-        tokenLimit: 200000,
-        type: "CLOSED_SOURCE",
-        toolUse: true
-    },
-    {
-        company: "ANTHROPIC",
-        provider: "anthropic",
-        modelName: "Claude 3 Opus",
-        modelId: "claude-3-opus-latest",
-        tokenLimit: 200000,
-        type: "CLOSED_SOURCE",
-        toolUse: true
-    },
-    {
         company: "GROQ",
         provider: "groq",
-        modelName: "Llama 3 Groq 8B",
-        modelId: "llama3-groq-8b-8192-tool-use-preview",
-        tokenLimit: 8192,
-        type: "OPEN_SOURCE",
-        toolUse: true
-    },
-    {
-        company: "GROQ",
-        provider: "groq",
-        modelName: "Llama 3 Groq 70B",
-        modelId: "llama3-groq-70b-8192-tool-use-preview",
-        tokenLimit: 8192,
+        modelName: "Llama 3.3 70B",
+        modelId: "llama-3.3-70b-versatile",
+        tokenLimit: 128000,
         type: "OPEN_SOURCE",
         toolUse: true
     },
@@ -118,15 +127,6 @@ export const MODEL_CONFIGS: ModelConfig[] = [
         provider: "groq",
         modelName: "Llama 3.1 8B",
         modelId: "llama-3.1-8b-instant",
-        tokenLimit: 128000,
-        type: "OPEN_SOURCE",
-        toolUse: true
-    },
-    {
-        company: "GROQ",
-        provider: "groq",
-        modelName: "Llama 3.1 70B",
-        modelId: "llama-3.1-70b-versatile",
         tokenLimit: 128000,
         type: "OPEN_SOURCE",
         toolUse: true
