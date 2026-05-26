@@ -134,36 +134,45 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     {
         company: "GOOGLE_GEN_AI",
         provider: "google-genai",
+        modelName: "Gemini 3.1 Pro",
+        modelId: "gemini-3.1-pro-preview",
+        tokenLimit: 1_048_576,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "GOOGLE_GEN_AI",
+        provider: "google-genai",
+        modelName: "Gemini 3.5 Flash",
+        modelId: "gemini-3.5-flash",
+        tokenLimit: 1_048_576,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "GOOGLE_GEN_AI",
+        provider: "google-genai",
+        modelName: "Gemini 3 Flash",
+        modelId: "gemini-3-flash-preview",
+        tokenLimit: 1_048_576,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "GOOGLE_GEN_AI",
+        provider: "google-genai",
+        modelName: "Gemini 3.1 Flash-Lite",
+        modelId: "gemini-3.1-flash-lite",
+        tokenLimit: 1_048_576,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "GOOGLE_GEN_AI",
+        provider: "google-genai",
         modelName: "Gemini 2.5 Pro",
         modelId: "gemini-2.5-pro",
         tokenLimit: 2_097_152,
-        type: "CLOSED_SOURCE",
-        toolUse: true
-    },
-    {
-        company: "GOOGLE_GEN_AI",
-        provider: "google-genai",
-        modelName: "Gemini 2.5 Flash",
-        modelId: "gemini-2.5-flash",
-        tokenLimit: 1_048_576,
-        type: "CLOSED_SOURCE",
-        toolUse: true
-    },
-    {
-        company: "GOOGLE_GEN_AI",
-        provider: "google-genai",
-        modelName: "Gemini 2.0 Flash",
-        modelId: "gemini-2.0-flash",
-        tokenLimit: 1_048_576,
-        type: "CLOSED_SOURCE",
-        toolUse: true
-    },
-    {
-        company: "GOOGLE_GEN_AI",
-        provider: "google-genai",
-        modelName: "Gemini 2.0 Flash-Lite",
-        modelId: "gemini-2.0-flash-lite",
-        tokenLimit: 1_048_576,
         type: "CLOSED_SOURCE",
         toolUse: true
     },
