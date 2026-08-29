@@ -18,6 +18,8 @@ const AUTO_TAG_DEBOUNCE_MS = 30_000;
 // ignore modify events on a file for this long after we tagged it,
 // so the frontmatter update itself does not retrigger auto-tagging
 const AUTO_TAG_COOLDOWN_MS = 2_000;
+// skip tag generation for files that already carry more tags than this
+const MAX_EXISTING_TAGS = 6;
 
 export default class AiTagger extends Plugin {
 	settings: AiTaggerSettings;
@@ -81,6 +83,18 @@ export default class AiTagger extends Plugin {
 	}
 
 	async tagText(currentFile: TFile, text: string) {
+		// Get existing tags using parseFrontMatterTags
+		const existingTags: string[] = parseFrontMatterTags(this.app.metadataCache.getFileCache(currentFile)?.frontmatter) || [];
+		console.debug("Existing Tags:", existingTags);
+
+		// already well tagged, so don't spend a request adding more
+		if (existingTags.length > MAX_EXISTING_TAGS) {
+			const message = `Skipped ${currentFile.basename}: already has ${existingTags.length} tags`;
+			console.info(message);
+			new Notice(message);
+			return;
+		}
+
 		// notify user that we are generating tags
 		new Notice("Generating tags...");
 		console.info("Generating tags...");
@@ -97,9 +111,6 @@ export default class AiTagger extends Plugin {
 				await this.initializeLlm();
 			}
 
-			// Get existing tags using parseFrontMatterTags
-			const existingTags: string[] = parseFrontMatterTags(this.app.metadataCache.getFileCache(currentFile)?.frontmatter) || [];
-			console.debug("Existing Tags:", existingTags);
 
 			// generate tags for the document using an LLM
 			let generatedTags: string[] = await this.llm!.generateTags(content, existingTags);
