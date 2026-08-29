@@ -68,7 +68,7 @@ export class LLM {
                 schema: tagger,
             }
 
-            if (this.modelId === "qwen2.5" || this.modelId === "mistral-nemo") {
+            if (this.modelId === "qwen3" || this.modelId === "mistral-nemo") {
                 if (!("bindTools" in model)) {
                     return model.withStructuredOutput(tagger);
                 }
