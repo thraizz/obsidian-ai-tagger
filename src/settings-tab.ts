@@ -93,5 +93,16 @@ export class AiTaggerSettingTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     }),
             );
+
+        new Setting(containerElement)
+            .setName('Auto-tag on save')
+            .setDesc('Automatically generate tags for a note shortly after you stop editing it. Each run sends the note to the configured model.')
+            .addToggle((toggle) =>
+                toggle.setValue(this.plugin.settings.autoTagOnSave)
+                    .onChange(async (value) => {
+                        this.plugin.settings.autoTagOnSave = value;
+                        await this.plugin.saveSettings();
+                    }),
+            );
     }
 }

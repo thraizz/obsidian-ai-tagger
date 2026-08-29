@@ -12,5 +12,6 @@ export interface AiTaggerSettings {
 	useCustomBaseUrl: boolean;
 	customBaseUrl: string;
 	lowerCaseMode: boolean;
+	autoTagOnSave: boolean;
 	[key: `${string}ApiKey`]: string;
 }

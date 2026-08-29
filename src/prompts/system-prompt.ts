@@ -23,10 +23,16 @@ You will receive:
    - Each tag must be directly relevant to the content
 
 2. NEW TAGS:
-   - Create 1-3 new tags
+   - Create new tags ONLY when the existing tags fail to capture an important aspect of the document
+   - Prefer reusing existing tags over inventing new ones; it is fine to return ZERO new tags
+   - Create at most 2 new tags, and only if genuinely needed
    - Format: #<category> (e.g., #machine-learning)
    - Must describe unique aspects not covered by existing tags
    - Avoid redundancy with existing tags
+
+## Total Tag Budget
+- Aim for a focused set: no more than ~6 tags total (existing + new) for a document
+- If the existing tags already describe the document well, return only the relevant existing ones and no new tags
 
 ## Important Notes:
 - All tags must include the # prefix

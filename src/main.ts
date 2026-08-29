@@ -8,13 +8,22 @@ import { convertTagsToLowerCase } from "./utils";
 import * as dotenv from 'dotenv';
 
 const DEFAULT_SETTINGS: Partial<AiTaggerSettings> = {
-	model: 'gpt-4o-mini',
-	lowerCaseMode: false
+	model: 'gpt-5.6-luna',
+	lowerCaseMode: false,
+	autoTagOnSave: false
 }
+
+// wait this long after the last modification before auto-tagging a file
+const AUTO_TAG_DEBOUNCE_MS = 30_000;
+// ignore modify events on a file for this long after we tagged it,
+// so the frontmatter update itself does not retrigger auto-tagging
+const AUTO_TAG_COOLDOWN_MS = 2_000;
 
 export default class AiTagger extends Plugin {
 	settings: AiTaggerSettings;
 	llm: LLM | null = null;
+	private autoTagTimers: Map<string, number> = new Map();
+	private autoTagging: Set<string> = new Set();
 
 	async initializeLlm() {
 		// Get model configuration
@@ -101,13 +110,23 @@ export default class AiTagger extends Plugin {
 				generatedTags = convertTagsToLowerCase(generatedTags);
 			}
 
-			// update frontmatter with generated tags
+			// update frontmatter with generated tags, merging + deduping so
+			// repeated (auto-)tagging stays idempotent instead of inflating tags
 			this.app.fileManager.processFrontMatter(currentFile, frontmatter => {
-				if (!frontmatter["tags"]) {
-					frontmatter["tags"] = generatedTags;
-				} else {
-					frontmatter["tags"].push(...generatedTags)
+				const current: string[] = Array.isArray(frontmatter["tags"])
+					? frontmatter["tags"]
+					: (frontmatter["tags"] ? [frontmatter["tags"]] : []);
+
+				const seen = new Set<string>();
+				const merged: string[] = [];
+				for (const tag of [...current, ...generatedTags]) {
+					// strip leading '#' and normalize case for dedup key only
+					const key = String(tag).replace(/^#/, "").toLowerCase();
+					if (!key || seen.has(key)) continue;
+					seen.add(key);
+					merged.push(tag);
 				}
+				frontmatter["tags"] = merged;
 			});
 		} catch (error) {
 			console.error('Error in tagText():', error);
@@ -221,9 +240,42 @@ export default class AiTagger extends Plugin {
 				});
 			})
 		);
+
+		// auto-generate tags when a file is saved (debounced, opt-in via settings)
+		this.registerEvent(
+			this.app.vault.on('modify', (file) => {
+				if (!this.settings.autoTagOnSave) return;
+				if (!(file instanceof TFile) || file.extension !== 'md') return;
+				// skip modify events caused by our own frontmatter update
+				if (this.autoTagging.has(file.path)) return;
+
+				const existingTimer = this.autoTagTimers.get(file.path);
+				if (existingTimer !== undefined) {
+					window.clearTimeout(existingTimer);
+				}
+
+				const timer = window.setTimeout(async () => {
+					this.autoTagTimers.delete(file.path);
+					this.autoTagging.add(file.path);
+					try {
+						await this.tagFileOrFolder(file);
+					} catch (error) {
+						console.error('Error while auto-tagging on save:', error);
+					} finally {
+						// keep the guard up briefly so the frontmatter write's
+						// modify event does not retrigger auto-tagging
+						window.setTimeout(() => this.autoTagging.delete(file.path), AUTO_TAG_COOLDOWN_MS);
+					}
+				}, AUTO_TAG_DEBOUNCE_MS);
+				this.autoTagTimers.set(file.path, timer);
+			})
+		);
 	}
 
 	onunload() {
-
+		for (const timer of this.autoTagTimers.values()) {
+			window.clearTimeout(timer);
+		}
+		this.autoTagTimers.clear();
 	}
 }
