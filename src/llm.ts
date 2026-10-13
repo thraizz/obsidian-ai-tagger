@@ -20,6 +20,8 @@ import { initChatModel } from "langchain/chat_models/universal";
 import { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import { CallbackHandler } from "langfuse-langchain";
 
+const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+
 const tagger = z.object({
     tags: z.array(z.string()).describe("An array of existing tags in the form \"#<existing_catgeory>\" that best categorizes the document."),
     newTags: z.array(z.string()).describe("An array of new tags in the form \"#<new_catgeory>\" that best categorizes the document."),
@@ -51,15 +53,27 @@ export class LLM {
 
     async getModel() {
         try {
+            // OpenRouter exposes an OpenAI-compatible API, so it runs through the OpenAI client
+            const isOpenRouter = this.modelConfig.provider === "openrouter";
             let model: BaseChatModel = await initChatModel(this.modelId, {
-                modelProvider: this.modelConfig.provider,
+                modelProvider: isOpenRouter ? "openai" : this.modelConfig.provider,
                 temperature: 0,
                 apiKey: this.apiKey,
                 baseUrl: this.baseUrl,
-                timeout: 10000,
+                timeout: isOpenRouter ? 30000 : 10000,
                 clientOptions: {
                     dangerouslyAllowBrowser: true,
                 },
+                ...(isOpenRouter && {
+                    configuration: {
+                        baseURL: this.baseUrl || OPENROUTER_BASE_URL,
+                        dangerouslyAllowBrowser: true,
+                        defaultHeaders: {
+                            "HTTP-Referer": "https://github.com/thraizz/obsidian-ai-tagger",
+                            "X-Title": "Obsidian AI Tagger",
+                        },
+                    },
+                }),
             });
 
             const tool = {

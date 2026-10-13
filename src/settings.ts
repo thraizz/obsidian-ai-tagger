@@ -8,6 +8,7 @@ export interface AiTaggerSettings {
 	groqApiKey: string;
 	googlegenaiApiKey: string;
 	ollamaApiKey: string;
+	openrouterApiKey: string;
 	model: string;
 	useCustomBaseUrl: boolean;
 	customBaseUrl: string;

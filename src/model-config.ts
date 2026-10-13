@@ -5,6 +5,7 @@ export const COMPANIES = {
     GROQ: "Groq",
     GOOGLE_GEN_AI: "Google Gen AI",
     OLLAMA: "Ollama",
+    OPENROUTER: "OpenRouter",
 } as const;
 
 export const MODEL_TYPES = {
@@ -201,6 +202,60 @@ export const MODEL_CONFIGS: ModelConfig[] = [
         modelId: "qwen3",
         tokenLimit: 128000,
         type: "OPEN_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "OPENROUTER",
+        provider: "openrouter",
+        modelName: "DeepSeek V4.1 Flash",
+        modelId: "deepseek/deepseek-v4.1-flash",
+        tokenLimit: 1_048_576,
+        type: "OPEN_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "OPENROUTER",
+        provider: "openrouter",
+        modelName: "GLM 5.3 Flash",
+        modelId: "z-ai/glm-5.3-flash",
+        tokenLimit: 1_048_576,
+        type: "OPEN_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "OPENROUTER",
+        provider: "openrouter",
+        modelName: "MiMo V2.6 Flash",
+        modelId: "xiaomi/mimo-v2.6-flash",
+        tokenLimit: 1_050_000,
+        type: "OPEN_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "OPENROUTER",
+        provider: "openrouter",
+        modelName: "GPT-6 Luna",
+        modelId: "openai/gpt-6-luna",
+        tokenLimit: 1_050_000,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "OPENROUTER",
+        provider: "openrouter",
+        modelName: "Claude Haiku 5.5",
+        modelId: "anthropic/claude-haiku-5.5",
+        tokenLimit: 1_000_000,
+        type: "CLOSED_SOURCE",
+        toolUse: true
+    },
+    {
+        company: "OPENROUTER",
+        provider: "openrouter",
+        modelName: "Gemini 3.8 Flash",
+        modelId: "google/gemini-3.8-flash",
+        tokenLimit: 1_048_576,
+        type: "CLOSED_SOURCE",
         toolUse: true
     }
 ];
